@@ -1,7 +1,7 @@
 package test
 
 import (
-	"grpc-proxy/proxy"
+	"grpc-proxy"
 	"strings"
 
 	"golang.org/x/net/context"
