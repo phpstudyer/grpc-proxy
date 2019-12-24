@@ -13,7 +13,7 @@ It has these top-level messages:
 	PingRequest
 	PingResponse
 */
-package mwitkow_testproto
+package testservice
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
