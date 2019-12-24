@@ -2,7 +2,7 @@ package test
 
 import (
 	"strings"
-	"grpc-proxy/proxy"
+	"github.com/phpstudyer/grpc-proxy"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

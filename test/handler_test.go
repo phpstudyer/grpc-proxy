@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	 "grpc-proxy/proxy"
+	"github.com/phpstudyer/grpc-proxy"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
