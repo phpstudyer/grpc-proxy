@@ -1,14 +1,23 @@
+package proxy
+
 // Copyright 2017 Michal Witkowski. All Rights Reserved.
 // See LICENSE for licensing terms.
 
-package proxy
-
 import (
 	"io"
+	"strings"
+	"time"
 
+	"github.com/jhump/protoreflect/desc"
+
+	"google.golang.org/grpc/status"
+
+	"git.xuekaole.com/smc/engine/mq"
+	"github.com/jhump/protoreflect/grpcreflect"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	grv "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 )
 
 var (
@@ -23,7 +32,7 @@ var (
 //
 // This can *only* be used if the `server` also uses grpcproxy.CodecForServer() ServerOption.
 func RegisterService(server *grpc.Server, director StreamDirector, serviceName string, methodNames ...string) {
-	streamer := &handler{director}
+	streamer := &handler{director: director}
 	fakeDesc := &grpc.ServiceDesc{
 		ServiceName: serviceName,
 		HandlerType: (*interface{})(nil),
@@ -45,12 +54,13 @@ func RegisterService(server *grpc.Server, director StreamDirector, serviceName s
 // backends. It should be used as a `grpc.UnknownServiceHandler`.
 //
 // This can *only* be used if the `server` also uses grpcproxy.CodecForServer() ServerOption.
-func TransparentHandler(director StreamDirector) grpc.StreamHandler {
-	streamer := &handler{director}
+func TransparentHandler(mq mq.MQ, director StreamDirector) grpc.StreamHandler {
+	streamer := &handler{mq, director}
 	return streamer.handler
 }
 
 type handler struct {
+	mq       mq.MQ
 	director StreamDirector
 }
 
@@ -58,6 +68,22 @@ type handler struct {
 // It is invoked like any gRPC server stream and uses the gRPC server framing to get and receive bytes from the wire,
 // forwarding it to a ClientStream established against the relevant ClientConn.
 func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error {
+	var (
+		body      *mq.Monitor
+		methodDes *desc.MethodDescriptor
+	)
+	start := time.Now()
+	defer func() {
+		end := time.Now()
+		if body != nil {
+			body.IsStream, body.Created, body.Duration = false, end, end.Sub(start).Seconds()
+			if methodDes != nil && (methodDes.IsClientStreaming() || methodDes.IsServerStreaming()) {
+				return
+			}
+			go s.mq.Send(body)
+		}
+	}()
+
 	// little bit of gRPC internals never hurt anyone
 	fullMethodName, ok := grpc.MethodFromServerStream(serverStream)
 	if !ok {
@@ -69,10 +95,38 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 		return err
 	}
 
+	method := strings.Split(fullMethodName, "/")
+	body = &mq.Monitor{
+		Service:   method[1],
+		Method:    method[2],
+		ServiceIP: backendConn.Target(),
+	}
+	// protoreflect client
+	client := grpcreflect.NewClient(context.Background(), grv.NewServerReflectionClient(backendConn))
+
+	serviceDes, err := client.ResolveService(method[1])
+	if err != nil {
+		return grpc.Errorf(codes.NotFound, "service not found")
+	}
+
+	methodDes = serviceDes.FindMethodByName(method[2])
+	if methodDes == nil {
+		return grpc.Errorf(codes.NotFound, "method not found")
+
+	}
+
+	if methodDes.IsClientStreaming() || methodDes.IsServerStreaming() {
+		//流,只记录请求次数
+		end := time.Now()
+		body.IsStream, body.Created, body.Duration = true, end, end.Sub(start).Seconds()
+		go s.mq.Send(body)
+	}
+
 	clientCtx, clientCancel := context.WithCancel(outgoingCtx)
 	// TODO(mwitkow): Add a `forwarded` header to metadata, https://en.wikipedia.org/wiki/X-Forwarded-For.
 	clientStream, err := grpc.NewClientStream(clientCtx, clientStreamDescForProxying, backendConn, fullMethodName)
 	if err != nil {
+		body.ErrMsg = err.Error()
 		return err
 	}
 	// Explicitly *do not close* s2cErrChan and c2sErrChan, otherwise the select below will not terminate.
@@ -94,6 +148,11 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 				// to cancel the clientStream to the backend, let all of its goroutines be freed up by the CancelFunc and
 				// exit with an error to the stack
 				clientCancel()
+
+				if err, ok := status.FromError(s2cErr); ok && err.Code() == codes.Internal {
+					body.ErrMsg = err.Message()
+				}
+
 				return grpc.Errorf(codes.Internal, "failed proxying s2c: %v", s2cErr)
 			}
 		case c2sErr := <-c2sErrChan:
@@ -103,11 +162,15 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 			serverStream.SetTrailer(clientStream.Trailer())
 			// c2sErr will contain RPC error from client code. If not io.EOF return the RPC error as server stream error.
 			if c2sErr != io.EOF {
+				if err, ok := status.FromError(c2sErr); ok && err.Code() == codes.Internal {
+					body.ErrMsg = err.Message()
+				}
 				return c2sErr
 			}
 			return nil
 		}
 	}
+	body.ErrMsg = "gRPC proxying should never reach this stage"
 	return grpc.Errorf(codes.Internal, "gRPC proxying should never reach this stage.")
 }
 
