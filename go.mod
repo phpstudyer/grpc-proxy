@@ -10,5 +10,5 @@ require (
 	github.com/phpstudyer/mq-http-go-sdk v1.0.1
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb
-	google.golang.org/grpc v1.32.0
+	google.golang.org/grpc v1.27.0
 )
