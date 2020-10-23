@@ -102,11 +102,11 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 		ServiceIP: backendConn.Target(),
 	}
 	// protoreflect client
-	client := grpcreflect.NewClient(context.Background(), grv.NewServerReflectionClient(backendConn))
+	client := grpcreflect.NewClient(outgoingCtx, grv.NewServerReflectionClient(backendConn))
 
 	serviceDes, err := client.ResolveService(method[1])
 	if err != nil {
-		return grpc.Errorf(codes.NotFound, "service not found")
+		return err
 	}
 
 	methodDes = serviceDes.FindMethodByName(method[2])
