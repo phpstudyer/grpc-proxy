@@ -76,7 +76,7 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	defer func() {
 		end := time.Now()
 		if body != nil {
-			body.IsStream, body.Created, body.Duration = false, end, end.Sub(start).Seconds()
+			body.IsStream, body.Created, body.Duration = false, end, end.Sub(start).Microseconds()
 			if methodDes != nil && (methodDes.IsClientStreaming() || methodDes.IsServerStreaming()) {
 				return
 			}

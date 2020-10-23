@@ -8,6 +8,8 @@ git.xuekaole.com/smc/engine v0.1.24 h1:8AHypoOhf2r2A8cAyD9jmI2s8t2XS51cc6ZwOM75Y
 git.xuekaole.com/smc/engine v0.1.24/go.mod h1:8YlTOVcuawHXJV7Yx36TFftCLgJTh0JyxSvRoz3Riy8=
 git.xuekaole.com/smc/engine v0.1.25 h1:QhFq1KtzwnNMd7E/KacaY73B6QBFDxaKIpH7w8cHOek=
 git.xuekaole.com/smc/engine v0.1.25/go.mod h1:c0XCDthHul/2QGjPCQQ/K/Yfqxlp37SaZj0LZlFmVqk=
+git.xuekaole.com/smc/engine v0.1.27 h1:wn9D1BzgacBNh6k1JS+wCiJy62klSTXz9RRo7/3ndRc=
+git.xuekaole.com/smc/engine v0.1.27/go.mod h1:c0XCDthHul/2QGjPCQQ/K/Yfqxlp37SaZj0LZlFmVqk=
 gitea.com/xorm/sqlfiddle v0.0.0-20180821085327-62ce714f951a/go.mod h1:EXuID2Zs0pAQhH8yz+DNjUbjppKQzKFAn28TMYPB6IU=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
@@ -329,6 +331,7 @@ google.golang.org/grpc v1.23.0/go.mod h1:Y5yQAOtifL1yxbo5wqy6BxZv8vAUGQwXBOALyac
 google.golang.org/grpc v1.24.0/go.mod h1:XDChyiUovWa60DnaeDeZmSW86xtLtjtZbwvSiRnRtcA=
 google.golang.org/grpc v1.25.1/go.mod h1:c3i+UQWmh7LiEpx4sFZnkU36qjEYZ0imhYfXVyQciAY=
 google.golang.org/grpc v1.26.0/go.mod h1:qbnxyOmOxrQa7FizSgH+ReBfzJrCY1pSN7KXBS8abTk=
+google.golang.org/grpc v1.27.0 h1:rRYRFMVgRv6E0D70Skyfsr28tDXIuuPZyWGMPdMcnXg=
 google.golang.org/grpc v1.27.0/go.mod h1:qbnxyOmOxrQa7FizSgH+ReBfzJrCY1pSN7KXBS8abTk=
 google.golang.org/grpc v1.32.0 h1:zWTV+LMdc3kaiJMSTOFz2UgSBgx8RNQoTGiZu3fR9S0=
 google.golang.org/grpc v1.32.0/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM8pak=
