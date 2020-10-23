@@ -76,7 +76,7 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	defer func() {
 		end := time.Now()
 		if body != nil {
-			body.IsStream, body.Created, body.Duration = false, end, end.Sub(start).Microseconds()
+			body.IsStream, body.Created, body.Duration = false, end, end.Sub(start).Milliseconds()
 			if methodDes != nil && (methodDes.IsClientStreaming() || methodDes.IsServerStreaming()) {
 				return
 			}
@@ -118,7 +118,7 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	if methodDes.IsClientStreaming() || methodDes.IsServerStreaming() {
 		//流,只记录请求次数
 		end := time.Now()
-		body.IsStream, body.Created, body.Duration = true, end, end.Sub(start).Microseconds()
+		body.IsStream, body.Created, body.Duration = true, end, end.Sub(start).Milliseconds()
 		go s.mq.Send(body)
 	}
 
