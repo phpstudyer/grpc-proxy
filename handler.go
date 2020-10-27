@@ -10,6 +10,7 @@ import (
 
 	"github.com/jhump/protoreflect/desc"
 
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"git.xuekaole.com/smc/engine/mq"
@@ -76,7 +77,7 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	defer func() {
 		end := time.Now()
 		if body != nil {
-			body.IsStream, body.Created, body.Duration = false, end, end.Sub(start).Milliseconds()
+			body.IsStream, body.EndTime, body.Duration = false, end, end.Sub(start).Milliseconds()
 			if methodDes != nil && (methodDes.IsClientStreaming() || methodDes.IsServerStreaming()) {
 				return
 			}
@@ -94,12 +95,21 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	if err != nil {
 		return err
 	}
-
+	md, ok := metadata.FromIncomingContext(outgoingCtx)
+	if !ok {
+		return status.Error(codes.PermissionDenied, "Parse request context failed")
+	}
+	requestID := md.Get("requestid")
+	if len(requestID) == 0 || requestID[0] == "" {
+		return status.Error(codes.PermissionDenied, "Must params not passed")
+	}
 	method := strings.Split(fullMethodName, "/")
 	body = &mq.Monitor{
 		Service:   method[1],
 		Method:    method[2],
 		ServiceIP: backendConn.Target(),
+		RequestID: requestID[0],
+		Created:   start,
 	}
 	// protoreflect client
 	client := grpcreflect.NewClient(outgoingCtx, grv.NewServerReflectionClient(backendConn))
@@ -118,7 +128,7 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	if methodDes.IsClientStreaming() || methodDes.IsServerStreaming() {
 		//流,只记录请求次数
 		end := time.Now()
-		body.IsStream, body.Created, body.Duration = true, end, end.Sub(start).Milliseconds()
+		body.IsStream, body.EndTime, body.Duration = true, end, end.Sub(start).Milliseconds()
 		go s.mq.Send(body)
 	}
 

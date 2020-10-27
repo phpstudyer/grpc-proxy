@@ -12,6 +12,8 @@ git.xuekaole.com/smc/engine v0.1.27 h1:wn9D1BzgacBNh6k1JS+wCiJy62klSTXz9RRo7/3nd
 git.xuekaole.com/smc/engine v0.1.27/go.mod h1:c0XCDthHul/2QGjPCQQ/K/Yfqxlp37SaZj0LZlFmVqk=
 git.xuekaole.com/smc/engine v0.1.28 h1:oL/UlST4FQnlKDC6ISEpnU6EYoCvxwfBnBYz8xXW7KU=
 git.xuekaole.com/smc/engine v0.1.28/go.mod h1:c0XCDthHul/2QGjPCQQ/K/Yfqxlp37SaZj0LZlFmVqk=
+git.xuekaole.com/smc/engine v0.1.29 h1:4Dc8mz79H1tio5cqkRgKZmpAxCqdj1jrjh1knMnf5DU=
+git.xuekaole.com/smc/engine v0.1.29/go.mod h1:c0XCDthHul/2QGjPCQQ/K/Yfqxlp37SaZj0LZlFmVqk=
 gitea.com/xorm/sqlfiddle v0.0.0-20180821085327-62ce714f951a/go.mod h1:EXuID2Zs0pAQhH8yz+DNjUbjppKQzKFAn28TMYPB6IU=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=

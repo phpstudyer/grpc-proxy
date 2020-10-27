@@ -3,7 +3,7 @@ module github.com/phpstudyer/grpc-proxy
 go 1.14
 
 require (
-	git.xuekaole.com/smc/engine v0.1.28
+	git.xuekaole.com/smc/engine v0.1.29
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/jhump/protoreflect v1.7.0
