@@ -118,7 +118,6 @@ func (s *handler) handler(srv interface{}, serverStream grpc.ServerStream) error
 	if err != nil {
 		return err
 	}
-
 	methodDes = serviceDes.FindMethodByName(method[2])
 	if methodDes == nil {
 		return grpc.Errorf(codes.NotFound, "method not found")
