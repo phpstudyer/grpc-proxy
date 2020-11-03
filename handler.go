@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jhump/protoreflect/desc"
+	"github.com/phpstudyer/protoreflect/desc"
 
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"git.xuekaole.com/smc/engine/mq"
-	"github.com/jhump/protoreflect/grpcreflect"
+	"github.com/phpstudyer/protoreflect/grpcreflect"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
